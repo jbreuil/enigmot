@@ -1,13 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Index from '@/pages/Index.vue'
+import TheAppIndex from '@/pages/TheAppIndex.vue'
+import ChallengeDaily from '@/pages/ChallengeDaily.vue'
+import ChallengeEndless from '@/pages/ChallengeEndless.vue'
+import ChallengeTimer from '@/pages/ChallengeTimer.vue'
 
 const routes = [
   {
     path: '/',
-    component: Index,
+    component: TheAppIndex,
+    name: 'index',
     meta: {
-      title: 'Vite + Vue + TypeScript + Tailwind Starter Template',
+      title: 'Enigmot',
+    },
+  },
+  {
+    path: '/daily',
+    component: ChallengeDaily,
+    name: 'daily',
+    meta: {
+      title: 'Enigmot',
+    },
+  },
+  {
+    path: '/timer',
+    component: ChallengeTimer,
+    name: 'timer',
+    meta: {
+      title: 'Enigmot',
+    },
+  },
+  {
+    path: '/endless',
+    component: ChallengeEndless,
+    name: 'endless',
+    meta: {
+      title: 'Enigmot',
     },
   },
 ]
