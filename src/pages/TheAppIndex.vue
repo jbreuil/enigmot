@@ -2,7 +2,8 @@
     <div class="flex flex-col justify-center items-center h-screen">
         <router-link :to="{ name: 'daily' }" class="btn my-2">Mot du jour</router-link>
         <router-link :to="{ name: 'timer' }" class="btn my-2">Chrono</router-link>
-        <router-link :to="{ name: 'endless' }" class="btn my-2">Sans fautes</router-link>
+        <router-link :to="{ name: 'endless' }" class="btn my-2">Infini</router-link>
+        <router-link :to="{ name: 'flawless' }" class="btn my-2">Sans fautes</router-link>
     </div>
 </template>
 <script setup lang="ts">
