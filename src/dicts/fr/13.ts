@@ -1,4 +1,4 @@
-[
+export const dict =  [
   "ABANDONNATEUR",
   "ABANDONNEMENT",
   "ABANDONNIQUES",

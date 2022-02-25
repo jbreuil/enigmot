@@ -11,8 +11,15 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, onUnmounted, PropType, ref } from 'vue';
+import { computed, onBeforeMount, onUnmounted, PropType, ref } from 'vue'
 import { Tile, TileStatus } from '@/types'
+
+onBeforeMount(async () => {
+    const dictImport = await import(`../dicts/fr/${props.correctWord.length}`)
+    allowedWords = dictImport.dict
+})
+
+let allowedWords: string[] = []
 
 const props = defineProps({
     correctWord: {
@@ -41,6 +48,16 @@ const props = defineProps({
         required: false,
         default: true,
     },
+    inputOnEmpty: {
+        type: Boolean,
+        required: false,
+        default: true,
+    },
+    hardMode: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
 })
 
 const emit = defineEmits<{
@@ -62,38 +79,24 @@ const minTileIndex = computed(() => {
 })
 // first index to be completed when typing on new line
 const startTileIndex = computed(() => {
-    if (props.motusMode) return 1
-    const firstNotGuessed = currentGuessed.value.find((guessedIndex, findIndex) => {
-        return guessedIndex !== findIndex
-    })
-    if (firstNotGuessed) {
-        if (firstNotGuessed === 0) {
+    if (!props.inputOnEmpty) {
+        if (props.motusMode) {
             return 1
         } else {
-            return currentGuessed.value[currentGuessed.value.indexOf(firstNotGuessed) - 1] + 1
+            return 0
         }
+    }
+    for (let findIndex = 0; findIndex < currentGuessed.value.length; findIndex++) {
+        if (currentGuessed.value[findIndex] !== findIndex) return findIndex
     }
     return currentGuessed.value.length
 
 })
-// indexes of letters to print on new lines
-const currentGuessed = computed(() => {
-    if (rowIndex.value === 0) {
-        return props.hints
-    } else {
-        const indexes: number[] = []
-        for (let index = 0; index < wordLength.value; index++) {
-            if (board.value[rowIndex.value - 1][index].status === TileStatus.CORRECT
-                || props.hints.includes(index)) {
-                indexes.push(index)
-            }
-        }
-        return indexes
-    }
-})
+
 const currentRow = computed(() => {
     return board.value[rowIndex.value]
 })
+
 function classTile(tile: Tile) {
     return {
         'tile-red': tile.status === TileStatus.CORRECT,
@@ -101,6 +104,15 @@ function classTile(tile: Tile) {
     }
 }
 
+const currentGuessed = ref(Array.from(props.hints))
+function addGuessedLetter(index: number) {
+    if (!currentGuessed.value.includes(index)) {
+        currentGuessed.value.push(index)
+        currentGuessed.value.sort((a, b) => {
+            return a - b
+        })
+    }
+}
 
 // init empty rows
 for (let emptyRowIndex = 0; emptyRowIndex < props.maxTries; emptyRowIndex++) {
@@ -170,8 +182,9 @@ function removeLetter() {
 
 function guessWord() {
     console.log("guessWord")
-    if (tileIndex.value === wordLength.value) {
-        allowInput.value = false
+    allowInput.value = false
+    if (tileIndex.value === wordLength.value
+        && allowedWords.includes(currentRow.value.map((tile) => tile.letter).join(''))) {
         parseRow()
         if (currentRow.value.every((tile) => tile.status === TileStatus.CORRECT)) {
             console.log("Bravo")
@@ -189,6 +202,8 @@ function guessWord() {
         }
     } else {
         // todo animation shake
+        console.log('bouh');
+        allowInput.value = true
     }
 }
 
@@ -200,6 +215,7 @@ function parseRow() {
         if (tile.letter === lettersFromCorrectWord[parseIndex]) {
             tile.status = TileStatus.CORRECT
             lettersFromCorrectWord[parseIndex] = null
+            addGuessedLetter(parseIndex)
         }
     })
     // now check for present with the remaining letters

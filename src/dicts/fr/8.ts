@@ -1,4 +1,4 @@
-[
+export const dict =  [
   "ABACULES",
   "ABAISSEE",
   "ABAISSER",
