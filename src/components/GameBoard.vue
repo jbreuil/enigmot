@@ -11,15 +11,8 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, onBeforeMount, onUnmounted, PropType, ref } from 'vue'
+import { computed, onBeforeMount, onUnmounted, PropType, ref, watchEffect } from 'vue'
 import { Tile, TileStatus } from '@/types'
-
-onBeforeMount(async () => {
-    const dictImport = await import(`../dicts/fr/${props.correctWord.length}`)
-    allowedWords = dictImport.dict
-})
-
-let allowedWords: string[] = []
 
 const props = defineProps({
     correctWord: {
@@ -65,6 +58,8 @@ const emit = defineEmits<{
     (e: 'lost'): void
 }>()
 
+let allowedWords: string[] = []
+const currentGuessed = ref(Array.from(props.hints))
 const allowInput = ref(true)
 const board = ref<Tile[][]>([])
 const tileIndex = ref(0)
@@ -104,7 +99,6 @@ function classTile(tile: Tile) {
     }
 }
 
-const currentGuessed = ref(Array.from(props.hints))
 function addGuessedLetter(index: number) {
     if (!currentGuessed.value.includes(index)) {
         currentGuessed.value.push(index)
@@ -114,15 +108,31 @@ function addGuessedLetter(index: number) {
     }
 }
 
-// init empty rows
-for (let emptyRowIndex = 0; emptyRowIndex < props.maxTries; emptyRowIndex++) {
-    board.value.push(new Array<Tile>(wordLength.value).fill({
-        letter: '',
-        status: TileStatus.INITIAL
-    }))
-}
-// init first line
-initRow()
+watchEffect(async () => {
+    // init empty rows
+    console.log('--------------');
+    console.log(board.value);
+
+    board.value = []
+    rowIndex.value = 0
+    tileIndex.value = 0
+    currentGuessed.value = Array.from(props.hints)
+    for (let emptyRowIndex = 0; emptyRowIndex < props.maxTries; emptyRowIndex++) {
+        board.value.push(new Array<Tile>(wordLength.value).fill({
+            letter: '',
+            status: TileStatus.INITIAL
+        }))
+    }
+    console.log(board.value);
+
+    // init dict 
+    const dictImport = await import(`../dicts/fr/${props.correctWord.length}`)
+    allowedWords = dictImport.dict
+
+    initRow()
+    allowInput.value = true
+})
+
 
 function initRow() {
     for (let letterIndex = 0; letterIndex < wordLength.value; letterIndex++) {
