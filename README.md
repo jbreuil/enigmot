@@ -3,6 +3,9 @@ Word game based on Motus/Wordle/Sutom
 
 Written in Typescript with [Vue 3](https://vuejs.org/)  and [Vite](https://vitejs.dev/) . CSS framework used is [Tailwind](https://tailwindcss.com/) .
 
+
+[Live Demo](https://jbreuil.github.io/enigmot/) 
+
 # Setup
 
 **Install dependencies**  
