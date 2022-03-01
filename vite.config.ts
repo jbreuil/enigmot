@@ -9,6 +9,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 export default defineConfig({
+  base: '/enigmot/',
   plugins: [
     vue({
       script: {
