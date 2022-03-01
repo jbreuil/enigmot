@@ -1,18 +1,8 @@
-<template>
-    <div class="flex flex-col mt-10">
-        <div class="flex justify-center" v-for="(row, rowIndex) in board" :key="rowIndex">
-            <div
-                class="tile"
-                :class="classTile(tile)"
-                v-for="(tile, tileIndex) in row"
-                :key="'tile' + tileIndex"
-            >{{ tile.letter }}</div>
-        </div>
-    </div>
-</template>
 <script setup lang="ts">
-import { computed, onBeforeMount, onUnmounted, PropType, ref, watchEffect } from 'vue'
+import { computed, onUnmounted, PropType, ref, watchEffect } from 'vue'
 import { Tile, TileStatus } from '@/types'
+import messageDisplay from '@/compositions/messageDisplay'
+import KeyBoard from '@/components/KeyBoard.vue'
 
 const props = defineProps({
     correctWord: {
@@ -64,9 +54,15 @@ const allowInput = ref(true)
 const board = ref<Tile[][]>([])
 const tileIndex = ref(0)
 const rowIndex = ref(0)
+const lettersStatus = ref<Record<string, TileStatus>>({})
+const { message, showMessage } = messageDisplay()
 // wordLength
 const wordLength = computed(() => {
     return props.correctWord.length
+})
+// empty tiles
+const emptyTilesCount = computed(() => {
+    return currentRow.value.filter(tile => tile.letter === '.').length
 })
 // min index to be erased by backspace
 const minTileIndex = computed(() => {
@@ -95,7 +91,8 @@ const currentRow = computed(() => {
 function classTile(tile: Tile) {
     return {
         'tile-red': tile.status === TileStatus.CORRECT,
-        'tile-yellow': tile.status === TileStatus.PRESENT
+        'tile-yellow': tile.status === TileStatus.PRESENT,
+        'tile-blue': tile.status === TileStatus.ABSENT || tile.status === TileStatus.INITIAL,
     }
 }
 
@@ -110,10 +107,8 @@ function addGuessedLetter(index: number) {
 
 watchEffect(async () => {
     // init empty rows
-    console.log('--------------');
-    console.log(board.value);
-
     board.value = []
+    lettersStatus.value = {}
     rowIndex.value = 0
     tileIndex.value = 0
     currentGuessed.value = Array.from(props.hints)
@@ -123,7 +118,6 @@ watchEffect(async () => {
             status: TileStatus.INITIAL
         }))
     }
-    console.log(board.value);
 
     // init dict 
     const dictImport = await import(`../dicts/fr/${props.correctWord.length}`)
@@ -155,7 +149,6 @@ function onKeyUp({ key }: { key: string }) {
     // check if input is enable    
     if (!allowInput.value) return
     const allowed = /^[a-zA-Z]$/
-    console.log(key)
     if (allowed.test(key)) {
         addLetter(key)
     } else {
@@ -173,7 +166,6 @@ function onKeyUp({ key }: { key: string }) {
 
 // key action handlers
 function addLetter(key: string) {
-    console.log("addLetter ", key)
     if (tileIndex.value < wordLength.value) {
         currentRow.value[tileIndex.value].letter = key.toUpperCase()
         tileIndex.value++
@@ -181,7 +173,6 @@ function addLetter(key: string) {
 }
 
 function removeLetter() {
-    console.log("removeLetter")
     if (tileIndex.value > minTileIndex.value) {
         currentRow.value[tileIndex.value - 1].letter = '.'
         tileIndex.value--
@@ -191,28 +182,40 @@ function removeLetter() {
 }
 
 function guessWord() {
-    console.log("guessWord")
     allowInput.value = false
-    if (tileIndex.value === wordLength.value
-        && allowedWords.includes(currentRow.value.map((tile) => tile.letter).join(''))) {
-        parseRow()
-        if (currentRow.value.every((tile) => tile.status === TileStatus.CORRECT)) {
-            console.log("Bravo")
-            emit('win', rowIndex.value + 1)
+    if (emptyTilesCount.value === 0) {
+        // so backspace start from end of row if needed
+        tileIndex.value = props.correctWord.length
+        if (allowedWords.includes(currentRow.value.map((tile) => tile.letter).join(''))) {
+            parseRow()
+            setTimeout(() => {
+                if (currentRow.value.every((tile) => tile.status === TileStatus.CORRECT)) {
+                    emit('win', rowIndex.value + 1)
+                } else {
+                    if ((rowIndex.value + 1) === props.maxTries) {
+                        emit('lost')
+                    } else {
+                        rowIndex.value++
+                        tileIndex.value = 0
+                        initRow()
+                        allowInput.value = true
+
+                    }
+                }
+            }, props.correctWord.length * 300)
         } else {
-            if ((rowIndex.value + 1) === props.maxTries) {
-                console.log("Perdu")
-                emit('lost')
-            } else {
+            // todo animation shake
+            if (props.hardMode) {
                 rowIndex.value++
                 tileIndex.value = 0
                 initRow()
-                allowInput.value = true
             }
+            showMessage("Ce mot n'existe pas dans notre dictionnaire")
+            allowInput.value = true
         }
     } else {
         // todo animation shake
-        console.log('bouh');
+        showMessage('Mot trop court !')
         allowInput.value = true
     }
 }
@@ -224,6 +227,7 @@ function parseRow() {
     currentRow.value.forEach((tile, parseIndex) => {
         if (tile.letter === lettersFromCorrectWord[parseIndex]) {
             tile.status = TileStatus.CORRECT
+            lettersStatus.value[tile.letter] = TileStatus.CORRECT
             lettersFromCorrectWord[parseIndex] = null
             addGuessedLetter(parseIndex)
         }
@@ -233,6 +237,20 @@ function parseRow() {
         if (tile.status === TileStatus.INITIAL && lettersFromCorrectWord.includes(tile.letter)) {
             tile.status = TileStatus.PRESENT
             lettersFromCorrectWord[lettersFromCorrectWord.indexOf(tile.letter)] = null
+            if (lettersStatus.value[tile.letter] !== TileStatus.CORRECT) {
+                lettersStatus.value[tile.letter] = TileStatus.PRESENT
+            }
+        }
+    })
+    // now mark as absent tiles that were neither correct or present so the
+    // the keyboard can be updated visually
+    currentRow.value.forEach((tile) => {
+        if (tile.status !== TileStatus.CORRECT && tile.status !== TileStatus.PRESENT) {
+            tile.status = TileStatus.ABSENT
+            if (lettersStatus.value[tile.letter] !== TileStatus.CORRECT
+                && lettersStatus.value[tile.letter] !== TileStatus.PRESENT) {
+                lettersStatus.value[tile.letter] = TileStatus.ABSENT
+            }
         }
     })
 }
@@ -244,26 +262,60 @@ window.addEventListener("keyup", onKeyUp)
 onUnmounted(() => {
     window.removeEventListener("keyup", onKeyUp)
 })
-
-
-
-
 </script>
+
+<template>
+    <div class="message flex justify-center my-8">
+        <Transition name="fade">
+            <div class="flex text-white text-3xl" v-show="message">{{ message }}</div>
+        </Transition>
+    </div>
+    <div class="flex flex-col my-5">
+        <div class="flex justify-center" v-for="(row, rowIndex) in board" :key="rowIndex">
+            <div
+                class="tile"
+                :class="classTile(tile)"
+                :style="{ transitionDelay: `${tileIndex * 300}ms`, transitionProperty: 'background-color' }"
+                v-for="(tile, tileIndex) in row"
+                :key="'tile' + tileIndex + correctWord"
+            >{{ tile.letter }}</div>
+        </div>
+    </div>
+    <KeyBoard
+        :delay="props.correctWord.length * 300"
+        @key="onKeyUp({ 'key': $event })"
+        :lettersStatus="lettersStatus"
+    ></KeyBoard>
+</template>
+
 <style scoped>
 .tile {
     width: 50px;
     height: 50px;
     @apply border-solid border border-white;
-    @apply bg-blue-500 text-white text-4xl;
+    @apply text-white text-4xl;
     @apply flex justify-center items-center;
     @apply pb-1;
+    user-select: none;
 }
 
-.tile-red {
-    @apply bg-red-500;
+.fade-enter {
+    opacity: 0;
 }
 
-.tile-yellow {
-    @apply bg-yellow-500;
+.fade-enter-active {
+    transition: opacity 0.5s ease-out;
+}
+
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-leave-active {
+    transition: opacity 0.5s ease-in;
+}
+
+.message {
+    min-height: 2.25rem;
 }
 </style>

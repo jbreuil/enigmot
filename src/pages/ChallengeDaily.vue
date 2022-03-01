@@ -1,16 +1,12 @@
 <template>
-    <GameBoard :correctWord="word" @win="selectNewWord" />
+    <GameBoard v-if="word !== ''" :correctWord="word" />
 </template>
 <script setup lang="ts">
 import GameBoard from '@/components/GameBoard.vue'
-import { dict } from '@/dicts/fr/9'
-import { ref } from 'vue';
+import wordSelection from '@/compositions/wordSelection'
 
-const word = ref('')
-selectNewWord()
+const { word, selectNewWord } = wordSelection();
 
+selectNewWord(6, 10)
 
-function selectNewWord() {
-    word.value = dict[Math.floor(Math.random() * (dict.length + 1))]
-}
 </script>

@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-    @apply bg-stone-700
+body {
+    @apply bg-stone-700;
+}
+
+.tile-red, .kb-red {
+    @apply bg-red-500;
+}
+
+.tile-yellow, .kb-yellow {
+    @apply bg-yellow-500;
+}
+
+.tile-blue {
+    @apply bg-blue-500;
+}
+
+.kb-gray {
+    @apply text-stone-500 border-stone-500;
 }

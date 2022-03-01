@@ -2,8 +2,7 @@ export const enum TileStatus {
     INITIAL = '',
     ABSENT = 'absent',
     PRESENT = 'present',
-    CORRECT = 'correct',
-    HYBRID = 'hybrid'
+    CORRECT = 'correct'
 }
 
 export interface Tile {
