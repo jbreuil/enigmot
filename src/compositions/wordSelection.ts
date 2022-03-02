@@ -13,7 +13,7 @@ export default function wordSelection() {
 
         const wordLength = Math.floor(Math.random() * (maxLength - minLength + 1) + minLength)
         // init dict 
-        const dictImport = await import(`../dicts/fr/guess_${wordLength}`)
+        const dictImport = await import(`../dicts/fr/guess_${wordLength}.ts`)
         const guessDict = dictImport.dict
         do {
             word.value = guessDict[Math.floor(Math.random() * (guessDict.length))]

@@ -120,7 +120,7 @@ watchEffect(async () => {
     }
 
     // init dict 
-    const dictImport = await import(`../dicts/fr/${props.correctWord.length}`)
+    const dictImport = await import(`../dicts/fr/${props.correctWord.length}.ts`)
     allowedWords = dictImport.dict
 
     initRow()
