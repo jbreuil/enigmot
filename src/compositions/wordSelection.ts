@@ -36,7 +36,7 @@ export default function wordSelection() {
         const dictImport = await import(`../dicts/fr/guess_${wordLength}.ts`)
         const guessDict = dictImport.dict
         const seed = day + month * 100 + year * 10000
-        const generator = seedrandom(seed.toString());
+        const generator = seedrandom.alea(seed.toString())
         let tmpWord = ''
         do {
             tmpWord = guessDict[generator.int32() % guessDict.length]
