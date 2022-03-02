@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import GameBoard from '@/components/GameBoard.vue'
 import wordSelection from '@/compositions/wordSelection'
-import { computed, ref } from 'vue';
+import { computed, ref } from 'vue'
 
 const showModal = ref(false)
 const btnLabel = ref('Nouveau mot [\u23CE]')
@@ -58,12 +58,12 @@ function loseRecap() {
 
 function onEnter({ key }: { key: string }) {
     if (key === 'Enter') {
-        window.removeEventListener("keyup", onEnter)
         nextWord()
     }
 }
 
 function nextWord() {
+    window.removeEventListener("keyup", onEnter)
     showModal.value = false
     selectNewWord(6, 10)
 }
