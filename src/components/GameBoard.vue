@@ -265,9 +265,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="message flex justify-center my-8">
+    <div class="message flex justify-center items-center my-4 lg:my-8">
         <Transition name="fade">
-            <div class="flex text-white text-3xl" v-show="message">{{ message }}</div>
+            <div class="flex text-white text-xl lg:text-3xl px-4" v-show="message">{{ message }}</div>
         </Transition>
     </div>
     <div class="flex flex-col my-5">
@@ -290,8 +290,8 @@ onUnmounted(() => {
 
 <style scoped>
 .tile {
-    width: 50px;
-    height: 50px;
+    width: 3rem;
+    height: 3rem;
     @apply border-solid border border-white;
     @apply text-white text-4xl;
     @apply flex justify-center items-center;
@@ -316,6 +316,6 @@ onUnmounted(() => {
 }
 
 .message {
-    min-height: 2.25rem;
+    min-height: 3.5rem;
 }
 </style>

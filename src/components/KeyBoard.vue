@@ -42,9 +42,12 @@ function classTile(status: TileStatus) {
                 @click="$emit('key', key)"
                 :key="key"
             >
-                <span v-if="key !== 'Backspace' && key !== 'Enter'">{{ key }}</span>
-                <span class="mx-4" v-if="key === 'Backspace'">{{ '\u232B' }}</span>
-                <span class="mx-8" v-if="key === 'Enter'">{{ '\u23CE' }}</span>
+                <span
+                    class="text-2xl lg:text-3xl"
+                    v-if="key !== 'Backspace' && key !== 'Enter'"
+                >{{ key }}</span>
+                <span class="text-xl lg:text-3xl" v-if="key === 'Backspace'">{{ '\u232B' }}</span>
+                <span class="text-xl lg:text-3xl" v-if="key === 'Enter'">{{ '\u23CE' }}</span>
             </button>
         </div>
     </div>
@@ -58,8 +61,9 @@ function classTile(status: TileStatus) {
 .key {
     @apply mr-1;
     @apply border rounded-sm;
-    @apply text-3xl;
-    min-width: 50px;
-    min-height: 50px;
+    width: 3rem;
+    height: 3rem;
+    min-width: 1.9rem;
+    min-height: 1.9rem;
 }
 </style>
