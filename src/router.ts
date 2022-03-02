@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 import TheAppIndex from '@/pages/TheAppIndex.vue'
 import ChallengeDaily from '@/pages/ChallengeDaily.vue'
@@ -50,7 +50,10 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory('/enigmot/'),
+  // for ghpages
+  history: createWebHashHistory('/enigmot/'),
+  // need fallback from server side https://router.vuejs.org/guide/essentials/history-mode.html
+  // history: createWebHistory('/enigmot/'),
   routes,
 })
 
