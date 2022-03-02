@@ -184,8 +184,6 @@ function removeLetter() {
 function guessWord() {
     allowInput.value = false
     if (emptyTilesCount.value === 0) {
-        // so backspace start from end of row if needed
-        tileIndex.value = props.correctWord.length
         if (allowedWords.includes(currentRow.value.map((tile) => tile.letter).join(''))) {
             parseRow()
             setTimeout(() => {
