@@ -1,29 +1,3 @@
-<template>
-    <div
-        class="flex justify-center items-center fixed inset-0 bg-gray-600 bg-opacity-95 overflow-y-auto h-full w-full"
-        id="modal"
-        v-if="showModal"
-    >
-        <div class="flex flex-col">
-            <p class="message">{{ message }}</p>
-            <a
-                ref="defLink"
-                class="definition"
-                :href="defURL"
-                hreflang="fr"
-                target="_blank"
-                rel="external"
-            >{{ word }}</a>
-            <span class="notice">(definition [Entrée])</span>
-            <button class="btn" @click="nextWord">{{ btnLabel }}</button>
-        </div>
-    </div>
-    <div v-if="streak > 0" class="score">
-        <div>Série en cours : {{ streak }}</div>
-        <div>Essais moyen : {{ average.toFixed(2) }}</div>
-    </div>
-    <GameBoard v-if="word !== ''" :correctWord="word" @win="winRecap" @lose="loseRecap" />
-</template>
 <script setup lang="ts">
 import GameBoard from '@/components/GameBoard.vue'
 import wordSelection from '@/compositions/wordSelection'
@@ -79,6 +53,33 @@ function nextWord() {
 }
 
 </script>
+
+<template>
+    <div
+        class="flex justify-center items-center fixed inset-0 bg-gray-600 bg-opacity-95 overflow-y-auto h-full w-full"
+        id="modal"
+        v-if="showModal"
+    >
+        <div class="flex flex-col">
+            <p class="message">{{ message }}</p>
+            <a
+                ref="defLink"
+                class="definition"
+                :href="defURL"
+                hreflang="fr"
+                target="_blank"
+                rel="external"
+            >{{ word }}</a>
+            <span class="notice">(definition [Entrée])</span>
+            <button class="btn" @click="nextWord">{{ btnLabel }}</button>
+        </div>
+    </div>
+    <div v-if="streak > 0" class="score">
+        <div>Série en cours : {{ streak }}</div>
+        <div>Essais moyen : {{ average.toFixed(2) }}</div>
+    </div>
+    <GameBoard v-if="word !== ''" :correctWord="word" @win="winRecap" @lose="loseRecap" />
+</template>
 
 <style scoped>
 .message {

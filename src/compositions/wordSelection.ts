@@ -1,4 +1,6 @@
 import { ref } from "vue"
+import * as seedrandom from "seedrandom"
+
 
 export default function wordSelection() {
     const word = ref('')
@@ -16,13 +18,35 @@ export default function wordSelection() {
         // init dict 
         const dictImport = await import(`../dicts/fr/guess_${wordLength}.ts`)
         const guessDict = dictImport.dict
+        let tmpWord = ''
         do {
-            word.value = guessDict[Math.floor(Math.random() * (guessDict.length))]
-        } while (lettersFilter.includes(word.value[0]))
+            tmpWord = guessDict[Math.floor(Math.random() * (guessDict.length))]
+        } while (lettersFilter.includes(tmpWord[0]))
+        word.value = tmpWord
+    }
+
+    async function selectDailyWord() {
+        word.value = ''
+        const lettersFilter = ['K', 'Q', 'W', 'X', 'Y', 'Z']
+        const day = new Date().getUTCDate()
+        const month = new Date().getUTCMonth()
+        const year = new Date().getUTCFullYear()
+        const wordLength = (day % 5) + 6
+        // init dict 
+        const dictImport = await import(`../dicts/fr/guess_${wordLength}.ts`)
+        const guessDict = dictImport.dict
+        const seed = day + month * 100 + year * 10000
+        const generator = seedrandom(seed.toString());
+        let tmpWord = ''
+        do {
+            tmpWord = guessDict[generator.int32() % guessDict.length]
+        } while (lettersFilter.includes(tmpWord[0]))
+        word.value = tmpWord
     }
 
     return {
         word,
-        selectNewWord
+        selectNewWord,
+        selectDailyWord
     }
 }
