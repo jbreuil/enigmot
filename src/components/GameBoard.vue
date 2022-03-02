@@ -45,7 +45,7 @@ const props = defineProps({
 
 const emit = defineEmits<{
     (e: 'win', tries: number): void
-    (e: 'lost'): void
+    (e: 'lose'): void
 }>()
 
 let allowedWords: string[] = []
@@ -193,7 +193,7 @@ function guessWord() {
                     emit('win', rowIndex.value + 1)
                 } else {
                     if ((rowIndex.value + 1) === props.maxTries) {
-                        emit('lost')
+                        emit('lose')
                     } else {
                         rowIndex.value++
                         tileIndex.value = 0
@@ -265,7 +265,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="message flex justify-center items-center my-4 lg:my-8">
+    <div class="message flex justify-center items-center my-2 lg:my-4">
         <Transition name="fade">
             <div class="flex text-white text-xl lg:text-3xl px-4" v-show="message">{{ message }}</div>
         </Transition>

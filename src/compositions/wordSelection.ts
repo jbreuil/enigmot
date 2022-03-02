@@ -8,6 +8,7 @@ export default function wordSelection() {
         maxLength = 10,
         lettersFilter = ['K', 'Q', 'W', 'X', 'Y', 'Z']) {
 
+        word.value = ''
         if (minLength < 1 || minLength > 25 || maxLength < 1 || maxLength > 25 || minLength > maxLength)
             throw new Error('Invalid parameters.')
 
