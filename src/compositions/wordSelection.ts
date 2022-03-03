@@ -39,7 +39,9 @@ export default function wordSelection() {
         const generator = seedrandom.alea(seed.toString())
         let tmpWord = ''
         do {
-            tmpWord = guessDict[generator.int32() % guessDict.length]
+            let random = generator.int32()
+            if (random < 0) random *= -1
+            tmpWord = guessDict[random % guessDict.length]
         } while (lettersFilter.includes(tmpWord[0]))
         word.value = tmpWord
     }
