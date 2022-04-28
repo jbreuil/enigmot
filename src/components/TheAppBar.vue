@@ -42,17 +42,9 @@ function toggleMenu() {
                     class="block mt-4 sm:inline-block sm:mt-0 text-white hover:text-teal-200 mr-4"
                 >Mot du jour</router-link>
                 <router-link
-                    :to="{ name: 'timer' }"
-                    class="block mt-4 sm:inline-block sm:mt-0 text-white hover:text-teal-200 mr-4"
-                >Chrono</router-link>
-                <router-link
                     :to="{ name: 'endless' }"
                     class="block mt-4 sm:inline-block sm:mt-0 text-white hover:text-teal-200 mr-4"
                 >Infini</router-link>
-                <router-link
-                    :to="{ name: 'flawless' }"
-                    class="block mt-4 sm:inline-block sm:mt-0 text-white hover:text-teal-200"
-                >Sans fautes</router-link>
             </div>
         </div>
     </nav>

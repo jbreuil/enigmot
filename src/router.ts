@@ -24,25 +24,9 @@ const routes = [
     },
   },
   {
-    path: '/timer',
-    component: ChallengeTimer,
-    name: 'timer',
-    meta: {
-      title: 'Enigmot',
-    },
-  },
-  {
     path: '/endless',
     component: ChallengeEndless,
     name: 'endless',
-    meta: {
-      title: 'Enigmot',
-    },
-  },
-  {
-    path: '/flawless',
-    component: ChallengeFlawless,
-    name: 'flawless',
     meta: {
       title: 'Enigmot',
     },

@@ -20,7 +20,7 @@ const defURL = computed(() => {
     return `https://www.google.fr/search?q=définition+${word.value}`
 })
 
-function winRecap(triesMade: number) {
+function winReport(triesMade: number) {
     streak.value++
     tries.value += triesMade
     window.addEventListener("keyup", onSpace)
@@ -29,7 +29,7 @@ function winRecap(triesMade: number) {
     showModal.value = true
 }
 
-function loseRecap() {
+function loseReport() {
     streak.value = 0
     tries.value = 0
     window.addEventListener("keyup", onSpace)
@@ -78,7 +78,7 @@ function nextWord() {
         <div>Série en cours : {{ streak }}</div>
         <div>Essais moyen : {{ average.toFixed(2) }}</div>
     </div>
-    <GameBoard v-if="word !== ''" :correctWord="word" @win="winRecap" @lose="loseRecap" />
+    <GameBoard v-if="word !== ''" :correctWord="word" @win="winReport" @lose="loseReport" />
 </template>
 
 <style scoped>
